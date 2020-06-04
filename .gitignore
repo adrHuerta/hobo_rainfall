@@ -37,3 +37,9 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+.Rproj.user
+
+# raw files
+data/conventional_quincemil_raw.csv
+data/hobo_quincemil_raw.xlsx
+data/ptmaldo_3.R
