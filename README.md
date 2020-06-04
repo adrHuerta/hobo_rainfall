@@ -11,11 +11,9 @@ Raw output data of **hobo** has a typical format (Figure 1) where the more impor
 
 
 <p align="center">
-  <img src="./data/figs/hobo_raw_output_file.png" style="width: 70%; height: 70%" />
+  <img src="./data/figs/hobo_raw_output_file.png" style="width: 60%; height: 60%" />
 </p>
-<p align="center">
 *Figure 1. Typycal format of a HOBO data logger*
-</p>
 
 To convert this rain pulse (count) to rain (mm), the following steps are needed: 
 
@@ -30,9 +28,8 @@ Taking into consideration the previous steps, it is possible to have a time seri
 <p align="center">
   <img src="./data/figs/comparison.png"  />
 </p>
-<p align="center">
-  *Figure 2. Time series of daily rainfall for **hobo** and **conventional** data*
-</p>
+*Figure 2. Time series of daily rainfall for **hobo** and **conventional** data*
+
 
 
 Is easy to see that **hobo** match really good with **conventional** for high and low values in the period time. The **mean bias is around -1.8 mm** and the **spearman correlation has a value of 0.97**. All this lets us know that **hobo** works great! However, more research has to be done!
