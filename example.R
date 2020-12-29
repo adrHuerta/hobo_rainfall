@@ -1,5 +1,4 @@
 rm(list = ls())
-
 "%>%" = magrittr::`%>%`
 
 #### hobo dataset ####
@@ -25,6 +24,23 @@ hobo[c(1, 13918, 13919), "pp"] = 0
   # with all non numeric values to 0 OR interpolate the numeric values 
   # into the NA values (of the continuous date_time)
 
+# from minute
+hobo_minute <- xts::xts(hobo$pp, hobo$date_time) %>%
+  xts::period.apply(x = .,
+                    INDEX = xts::endpoints(., on = "minutes"),
+                    FUN = sum)
+
+# making seconds to 00
+zoo::index(hobo_minute) = as.POSIXct(paste(format(time(hobo_minute), "%Y-%m-%d %H:%M"), ":00", sep = ""))
+# creating a continuous time span
+xts_minute = seq(as.POSIXct("2017-02-14 00:00:00"), as.POSIXct("2017-07-24 23:00:00"), by = 60)
+# converting irregular to regular xts ts
+hobo_minute = merge(hobo_minute, xts_minute)
+hobo_minute[is.na(hobo_minute)] = 0
+# deleting (setting NA) values outside of the range
+hobo_minute[ time(hobo_minute) < hobo$date_time[1]] = NA
+hobo_minute[ time(hobo_minute) > hobo$date_time[length(hobo$date_time)]] = NA
+
 ## hobo dataset to continuous date (to hours and daily)
 
 hobo_hourly <- xts::xts(hobo$pp, hobo$date_time) %>%
@@ -32,20 +48,18 @@ hobo_hourly <- xts::xts(hobo$pp, hobo$date_time) %>%
                     INDEX = xts::endpoints(., on = "hours"),
                     FUN = sum)
 
-# making minutes and seconds to 00
 zoo::index(hobo_hourly) = as.POSIXct(paste(format(time(hobo_hourly), "%Y-%m-%d %H"), ":00:00", sep = ""))
-
-# creating a continuous time span
 xts_hourly = seq(as.POSIXct("2017-02-14 00:00:00"), as.POSIXct("2017-07-24 23:00:00"), by = 3600)
-
-# converting irregular to regular xts ts
 hobo_hourly = merge(hobo_hourly, xts_hourly)
 hobo_hourly[is.na(hobo_hourly)] = 0
+hobo_hourly[ time(hobo_hourly) < hobo$date_time[1]] = NA
+hobo_hourly[ time(hobo_hourly) > hobo$date_time[length(hobo$date_time)]] = NA
 
+# to daily, it's just needed minute or hour object, in this case the first option is used
 
 hobo_daily <- hobo_hourly %>%
   xts::lag.xts(., k = -8) %>% # daily sum as in a conventional station (PERU time 7am-7pm)
-  xts::apply.daily(sum, na.rm = F)
+  xts::apply.daily(sum, na.rm = FALSE)
 
 # converting time to date
 zoo::index(hobo_daily) = as.Date(format(time(hobo_daily), "%Y-%m-%d"))
